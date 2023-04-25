@@ -1,4 +1,5 @@
-const PORT = 3001
+require('dotenv').config();
+const PORT = 3000
 const express = require('express')
 const server = express();
 const apiRouter = require('./api');
