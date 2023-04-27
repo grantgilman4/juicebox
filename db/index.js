@@ -2,7 +2,8 @@
 const { Client } = require('pg');
 //add db name and location url
 const client = new Client('postgres://localhost:5432/juicebox-dev');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 //helper functions
 async function getAllUsers() {
     const { rows } = await client.query(
@@ -12,12 +13,13 @@ async function getAllUsers() {
 }
 async function createUser({ username, password, name, location }) {
     try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         const { rows: [user] } = await client.query(`
             INSERT INTO users(username, password, name, location)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (username) DO NOTHING
             RETURNING *;
-            `, [username, password, name, location]
+            `, [username, hashedPassword, name, location]
             );
             return user;
     } catch (error) {

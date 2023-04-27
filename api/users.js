@@ -2,6 +2,7 @@ const express = require('express');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { getAllUsers, getUserByUsername, createUser} = require('../db');
+const bcrypt = require('bcrypt');
 
 usersRouter.use((req, res, next) => {
     console.log("A request is being made to /users");
@@ -28,8 +29,10 @@ usersRouter.post('/login', async (req, res, next) => {
   
     try {
       const user = await getUserByUsername(username);
-  
-      if (user && user.password == password) {
+      const hashedPassword = user.password;
+      const match = await bcrypt.compare(password, hashedPassword);
+      // user.password == password
+      if (user && match) {
         // create token & return to user
         const token = jwt.sign(user, process.env.JWT_SECRET)
         res.send({ message: "you're logged in!", token: token });
