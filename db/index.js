@@ -1,7 +1,8 @@
 //imports pg module
 const { Client } = require('pg');
+const { DATABASE_URL} = process.env;
 //add db name and location url
-const client = new Client('postgres://localhost:5432/juicebox-dev');
+const client = new Client(DATABASE_URL || 'postgres://localhost:5432/juicebox-dev');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 //helper functions
